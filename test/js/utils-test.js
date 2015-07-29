@@ -327,3 +327,23 @@ test("getRoles on element with abstract role.", function() {
     test("getRoles on element with multiple invalid roles.", multipleRoleTestHelper(['foo', 'fubar', 'bar'], -1));
 
 }());
+
+module("canScrollTo");
+
+asyncTest("check when container is body.", function(assert) {
+    // This is a testing a bug that affects axs.utils.canScrollTo in Chrome and Safari and not
+    // IE11 or Firefox or PhantomJS
+    var fixture = document.getElementById("qunit-fixture");
+    var scrollFrame = fixture.appendChild(document.createElement("iframe"));
+    scrollFrame.src = "canScrollTest.html";
+    scrollFrame.addEventListener("load", function() {
+        var scrollDoc = scrollFrame.contentDocument;
+        var footer = scrollDoc.getElementById("Footer");
+        assert.equal(axs.utils.canScrollTo(footer, scrollDoc.body), true,
+            "Should be able to scroll to footer");
+        scrollFrame.contentWindow.scroll(0, 2000);
+        assert.equal(axs.utils.canScrollTo(footer, scrollDoc.body), true,
+            "Should be able to scroll to footer after scroll");
+        QUnit.start();
+    }, false);
+});
